@@ -503,37 +503,6 @@ bool variant_can_cast(Variant* variant, Type type)
         return false;
     }
     ctype = type;
-
-    // switch (variant->type)
-    // {
-    //     case Empty:
-    //         ctype = Empty;
-    //         break;
-    //     case Char:
-    //         ctype = Char;
-    //         //printf("Variant.CHAR\n");
-    //         break;
-    //     case Integer:
-    //     {
-    //         ctype = Integer;
-    //         break;
-    //     }
-    //     case i8:
-    //     {
-    //         ctype = i8;
-    //         break;
-    //     }
-    //     case Float:
-    //     {
-    //         ctype = Float;
-    //         break;
-    //     }
-    //     case String:
-    //     {
-    //         ctype = String;
-    //         break;
-    //     }
-    // }
     
     valid_arr = variant_get_valid_casts(ctype);
     for (int i = 0; i<10; i++)

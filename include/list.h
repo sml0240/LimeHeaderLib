@@ -6,16 +6,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
-// #define FOREACH(type, start, end, fn) \ 
-//     for (type _foreach_var = start; _foreach_var != end; _foreach_var++) \
-//     { \ 
-//         fn(_foreach_var); \ 
-//                  }
-
-// #define PRINTS(n) printf("%s\n")
-// #define PRINTD(n) printf("%d\n")
-
 // ------- GENERIC DYNAMIC LIST -------
 
 /*
@@ -34,7 +24,6 @@
     - valid_index() funktionen ska köras först när ett index är med
     - resize_check() är bra att köra på alla inserts/appends \
         gör först en resize_check, är den true så kör list_resize
-
 */
 
 typedef struct List

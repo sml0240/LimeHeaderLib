@@ -14,14 +14,12 @@ struct Link
     Link* next;
 };
 
-
 struct VariantLinkedList
 {
     Link* head;
     size_t size;
 
 };
-
 
 VariantLinkedList* variant_linkedlist_create()
 {
@@ -48,7 +46,6 @@ int variant_linkedlist_append(VariantLinkedList* list, Variant* item)
 
     if (new_link == NULL)
     {
-        //fprintf(stderr, "VariantLinkedlist Initialization falied");
         return -1;
     }
 
@@ -77,14 +74,12 @@ int variant_linkedlist_append(VariantLinkedList* list, Variant* item)
     return ins_position;
 }
 
-
 OptionalPtr variant_linkedlist_get(VariantLinkedList* list, size_t index)
 {
     OptionalPtr opt; 
 
     if (list->size - 1 < index)
     {
-        //opt.value = 0;
         opt.has_value = false;
         return opt;
     }
@@ -93,8 +88,6 @@ OptionalPtr variant_linkedlist_get(VariantLinkedList* list, size_t index)
 
     for (size_t i = 0; i < index; i++)
         link = link->next;
-    
-    //printf("here at variantlinkedlist get\n");
 
     opt.value = link->value;
     opt.has_value = true;

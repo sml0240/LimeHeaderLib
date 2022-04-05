@@ -1,4 +1,2 @@
-listtest
-hmap_test
-queue_test
-test
+*test
+*.out

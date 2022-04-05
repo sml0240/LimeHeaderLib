@@ -118,7 +118,7 @@ bool hashmap_add(HashMap* hashmap, char* key, void* value)
         hashmap->map[index].entry_count++;
         hashmap->entry_count++;
 
-        printf("bucket entry_count on add: %d", hashmap->map[index].entry_count);
+//        printf("bucket entry_count on add: %d", hashmap->map[index].entry_count);
         return true;
     }
 
@@ -160,8 +160,6 @@ OptionalPtr hashmap_remove(HashMap* hashmap, char* key)
     {
         printf("hashmap index %d is empty", index);
         return ret_opt;
-
-        //return false;
     }
 
     Entry* entry = hashmap->map[index].entry;
@@ -179,8 +177,8 @@ OptionalPtr hashmap_remove(HashMap* hashmap, char* key)
         Entry* prev_entry;
         Entry* next_entry;
 
-        printf("bucket count: %d, hmap count: %d\n" ,bc, hashmap->entry_count);
-        printf("prev e_idx: %d current e_idx: %d, next e_idx: %dn", e_idx-1, e_idx, e_idx + 1);
+        // printf("bucket count: %d, hmap count: %d\n" ,bc, hashmap->entry_count);
+        // printf("prev e_idx: %d current e_idx: %d, next e_idx: %dn", e_idx-1, e_idx, e_idx + 1);
         if (e_idx > 0)
         {
             has_prev = true;
@@ -226,7 +224,7 @@ OptionalPtr hashmap_get(HashMap* hashmap, char* key)
 {
     OptionalPtr opt = {.value = NULL, .has_value = false};
 
-    uint32_t hash = get_hash_murmur(key, hashmap->hash_data->seed); // get_hash(key);
+    uint32_t hash = get_hash_murmur(key, hashmap->hash_data->seed);
     int32_t index = hash % HASHMAP_SIZE;
 
     if (hashmap->map[index].empty)
@@ -258,6 +256,7 @@ OptionalPtr hashmap_find(Entry* entry, uint32_t hash, HashMapReturnValue retval_
                 break;
             case HASHMAP_VALUE:
                 opt.value = entry->value;
+                
                 break;
             case HASHMAP_HAS_KEY:
                 break;
@@ -354,7 +353,6 @@ char* hashmap_keys(HashMap* hashmap)
             printf("found a bucket not empty! \n");
             Entry* entry = bucket->entry;
             memcpy(key_arr +(i), entry->key, 8);
-            //printf("key arr after added key, %s, \n", &key_arr);
             while (entry->next != NULL)
             {
                 c++;
@@ -445,8 +443,6 @@ int bucket_count(Bucket* bucket)
 bool valid_bucket_index(Bucket* bucket, int index)
 {
     return (bucket->entry_count >= index);
-    // int bc = bucket_count(bucket);
-    // return (index <= bc);
 }
 
 Entry* bucket_get_entry_at_position(Bucket* bucket, int position)

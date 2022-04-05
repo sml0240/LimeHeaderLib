@@ -2,17 +2,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "variant.h"
+//#include "variant.h"
 #include "optional.h"
 
-typedef struct Link Link;
 
-typedef struct VariantLinkedList VariantLinkedList;
+//////// INFO /////////
+
+// - linkedlist_destroy är buggy, tror den freear fel
+
+typedef struct Link Link;
+typedef struct LinkedList LinkedList;
 
 
 typedef struct Link
 {
-    Variant* value;
+    void* value;
     Link* next;
 }Link;
 
@@ -37,6 +41,7 @@ LinkedList* linkedlist_create()
     list->size = 0;
     return list;
 }
+
 bool is_index_valid(LinkedList* list, size_t index)
 {
     return !((list->size - 1 < index) || (index < 0));
@@ -55,7 +60,7 @@ int linkedlist_append(LinkedList* list, void* item)
 
     if (new_link == NULL)
     {
-        //fprintf(stderr, "VariantLinkedlist Initialization falied");
+
         return -1;
     }
 
@@ -89,20 +94,12 @@ OptionalPtr linkedlist_get(LinkedList* list, size_t index)
 {
     OptionalPtr opt;
 
-    // if (list->size - 1 < index)
-    // {
-    //     //opt.value = 0;
-    //     opt.has_value = false;
-    //     return opt;
-    // }
-
     if (!is_index_valid(list, index))
     {
-
         opt.has_value = false;
         return opt;
     }
-    
+
     Link* link = list->head;
 
     for (size_t i = 0; i < index; i++)
@@ -115,32 +112,14 @@ OptionalPtr linkedlist_get(LinkedList* list, size_t index)
 
 Link* __get_link(LinkedList* list, size_t index)
 {
-    //OptionalPtr opt;
 
-    // if (list->size - 1 < index)
-    // {
-    //     //opt.value = 0;
-    //     opt.has_value = false;
-    //     return opt;
-    // }
-
-    // if (!is_index_valid(list, index))
-    // {
-    //     opt.has_value = false;
-    //     return opt;
-    // }
-    
     Link* link = list->head;
 
     for (size_t i = 0; i < index; i++)
         link = link->next;
-
-    // opt.value = link;
-    // opt.has_value = true;
+    
     return link;
 }
-
-
 
 int linkedlist_delete(LinkedList* list, size_t index)
 {
@@ -172,10 +151,10 @@ int linkedlist_delete(LinkedList* list, size_t index)
     Link* prev;
     Link* next;
 
-    if (has_prev)
+    if (index > 0)
         prev = __get_link(list, index-1);
 
-    if (has_next)
+    if (is_index_valid(list, index+1))
     {
         next = current_link->next;
         if (has_prev)
@@ -194,7 +173,6 @@ int linkedlist_delete(LinkedList* list, size_t index)
     list->size--;
     return 0;
 }
-
 
 
 void linkedlist_destroy(LinkedList* list)
