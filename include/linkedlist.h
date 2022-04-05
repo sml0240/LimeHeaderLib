@@ -1,24 +1,32 @@
-//#include "../limelib.h"
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "variant.h"
+#include "optional.h"
 
-typedef struct IntLink IntLink;
+typedef struct Link Link;
 
-struct IntLink
+typedef struct VariantLinkedList VariantLinkedList;
+
+
+typedef struct Link
 {
-    int value;
-    IntLink* next;
-};
+    Variant* value;
+    Link* next;
+}Link;
 
-struct IntLinkedlist
+
+typedef struct LinkedList
 {
-    IntLink* head;
+    Link* head;
     size_t size;
-};
+}LinkedList;
 
-IntLinkedlist* int_linkedlist_create()
+
+LinkedList* linkedlist_create()
 {
-    IntLinkedlist* list = malloc(sizeof(IntLinkedlist));
+    LinkedList* list = malloc(sizeof(LinkedList));
     if (list == NULL)
     {
         fprintf(stderr, "IntLinkedlist Initialization falied");
@@ -29,55 +37,73 @@ IntLinkedlist* int_linkedlist_create()
     list->size = 0;
     return list;
 }
+bool is_index_valid(LinkedList* list, size_t index)
+{
+    return !((list->size - 1 < index) || (index < 0));
 
-size_t int_linkedlist_size(IntLinkedlist* list)
+}
+
+size_t linkedlist_size(LinkedList* list)
 {
     return list->size;
 }
 
-int int_linkedlist_append(IntLinkedlist* list, int num)
+int linkedlist_append(LinkedList* list, void* item)
 {
-    IntLink* new_link = malloc(sizeof(IntLink));
+    Link* new_link = malloc(sizeof(Link));
+    int ins_position = 0;
 
     if (new_link == NULL)
     {
-        fprintf(stderr, "IntLinkedlist Initialization falied");
+        //fprintf(stderr, "VariantLinkedlist Initialization falied");
         return -1;
     }
 
-    new_link->value = num;
+    new_link->value = item;
     new_link->next = NULL;
 
     if (list->head == NULL)
     {
         list->head = new_link;
         list->size++;
-        return 0;
+        return ins_position;
     }
 
-    IntLink* last_link = list->head;
+    Link* last_link = list->head;
 
     while (last_link->next != NULL)
+    {
+        ins_position++;
         last_link = last_link->next;
+    }
 
     last_link->next = new_link;
     list->size++;
+    printf("here at variantlinkedlist append end\n");
 
-    return 1;
+    return ins_position;
 }
 
-OptionalInt int_linkedlist_get(IntLinkedlist* list, size_t index)
-{
-    OptionalInt opt;
 
-    if (list->size - 1 < index)
+OptionalPtr linkedlist_get(LinkedList* list, size_t index)
+{
+    OptionalPtr opt;
+
+    // if (list->size - 1 < index)
+    // {
+    //     //opt.value = 0;
+    //     opt.has_value = false;
+    //     return opt;
+    // }
+
+    if (!is_index_valid(list, index))
     {
-        opt.value = 0;
+
         opt.has_value = false;
         return opt;
     }
-
-    IntLink* link = list->head;
+    
+    Link* link = list->head;
 
     for (size_t i = 0; i < index; i++)
         link = link->next;
@@ -87,27 +113,94 @@ OptionalInt int_linkedlist_get(IntLinkedlist* list, size_t index)
     return opt;
 }
 
-int int_linkedlist_delete(IntLinkedlist* list, size_t index)
+Link* __get_link(LinkedList* list, size_t index)
 {
-    if (list->size - 1 < index)
-        return -1;
+    //OptionalPtr opt;
 
-    IntLink* link = list->head;
+    // if (list->size - 1 < index)
+    // {
+    //     //opt.value = 0;
+    //     opt.has_value = false;
+    //     return opt;
+    // }
+
+    // if (!is_index_valid(list, index))
+    // {
+    //     opt.has_value = false;
+    //     return opt;
+    // }
     
-    for (size_t i = 0; i < index - 1; i++)
+    Link* link = list->head;
+
+    for (size_t i = 0; i < index; i++)
         link = link->next;
 
-    IntLink* next_link = link->next->next;
-    free(link->next);
-    link->next = next_link;
+    // opt.value = link;
+    // opt.has_value = true;
+    return link;
+}
+
+
+
+int linkedlist_delete(LinkedList* list, size_t index)
+{
+    if (!is_index_valid(list, index))
+    {
+        return -1;
+    }
+    Link* current_link = __get_link(list, index);
+
+    bool has_prev = false;
+    bool has_next = false;
+
+    if (index > 0)
+        has_prev = true;
+
+    if (is_index_valid(list, index+1))
+        has_next = true;
+
+    // is only item
+    if (!has_prev && !has_next)
+    {
+        printf("NOT prev and NOT next\n");
+        list->head = NULL;
+        free(current_link);
+        list->size--;
+        return 0;
+    }
+
+    Link* prev;
+    Link* next;
+
+    if (has_prev)
+        prev = __get_link(list, index-1);
+
+    if (has_next)
+    {
+        next = current_link->next;
+        if (has_prev)
+        {
+            printf("both prev and next\n");
+            prev->next = next;
+        }
+        else
+        {
+            printf("only next\n");
+            list->head = next;
+        }
+    }
+
+    free(current_link);
     list->size--;
     return 0;
 }
 
-void int_linkedlist_destroy(IntLinkedlist* list)
+
+
+void linkedlist_destroy(LinkedList* list)
 {
-    IntLink* current_link = list->head;
-    IntLink* next_link;
+    Link* current_link = list->head;
+    Link* next_link;
 
     for (size_t i = 0; i < list->size; i++)
     {
@@ -119,7 +212,7 @@ void int_linkedlist_destroy(IntLinkedlist* list)
     free(list);
 }
 
-void int_linkedlist_print(IntLinkedlist* list)
+void linkedlist_print(LinkedList* list)
 {
     if (list->head == NULL)
     {
@@ -127,7 +220,7 @@ void int_linkedlist_print(IntLinkedlist* list)
         return;
     }
 
-    IntLink* link = list->head;
+    Link* link = list->head;
 
     for (size_t i = 0; i < list->size; i++)
     {
