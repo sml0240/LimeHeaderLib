@@ -33,13 +33,13 @@ typedef struct Variant
 } Variant;
 
 
-VarResult variant_result_ok(Variant* variant)
-{
-    VarResult res;
-    res.variant = variant;
-    res.result = OK;
-    return res;
-}
+// VarResult variant_result_ok(Variant* variant)
+// {
+//     VarResult res;
+//     res.variant = variant;
+//     res.result = OK;
+//     return res;
+// }
 
 
 Variant* variant_create(void* value, size_t type)
