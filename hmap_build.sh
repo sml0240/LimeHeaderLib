@@ -1,0 +1,1 @@
+cc hmap_test.c -o hmap_test && ./hmap_test
